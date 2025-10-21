@@ -42,6 +42,7 @@ def main(page: ft.Page):
     anno = ft.TextField(label = "Anno")
     num_posti = ft.TextField(value="0", text_align="right", width=100)
 
+    # Codice del contatore importato dalla documentazione di Flet
     def minus_click(e):
         num_posti.value = str(int(num_posti.value) - 1)
         page.update()
@@ -77,15 +78,33 @@ def main(page: ft.Page):
 
     def aggiungi_automobile_click(e):
         # Validazione dei campi
-        if not anno.value or not anno.value.isdigit():
+        if not marca.value:
+            marca.error_text = "Campo obbligatorio"
+            alert.show_alert("❌ Inserisci la marca")
+            page.update()
+            return
+        else:
+            marca.error_text = None
+
+        if not modello.value:
+            modello.error_text = "Campo obbligatorio"
+            alert.show_alert("❌ Inserisci il modello")
+            page.update()
+            return
+        else:
+            modello.error_text = None
+
+        if not anno.value or not anno.value.isdigit() or len(anno.value) != 4:
             anno.error_text = "Inserisci un anno valido"
+            alert.show_alert("❌ Inserisci un anno valido")
             page.update()
             return
         else:
             anno.error_text = None
 
-        if not num_posti.value or not num_posti.value.isdigit():
-            num_posti.error_text = "Inserisci un numero valido di posti"
+        if not num_posti.value or not num_posti.value.isdigit() or int(num_posti.value) <= 0:
+            num_posti.error_text = "Numero posti non valido"
+            alert.show_alert("❌ Inserisci un numero valido di posti")
             page.update()
             return
         else:
@@ -96,17 +115,16 @@ def main(page: ft.Page):
         Aggiungi_auto(marca.value, modello.value, anno_int, num_posti_int)
         aggiorna_lista_auto()
 
+        #Dopo aver aggiunto la nuova auto alla lista ripristina campi per inserimento
         marca.value = ""
         modello.value = ""
         anno.value = ""
         num_posti.value = "0"
-
+        marca.error_text = None
+        modello.error_text = None
         anno.error_text = None
         num_posti.error_text = None
-
         page.update()
-    # Handlers per la gestione dei bottoni utili all'inserimento di una nuova auto
-    # TODO
 
     # --- EVENTI ---
     toggle_cambia_tema = ft.Switch(label="Tema scuro", value=True, on_change=cambia_tema)
