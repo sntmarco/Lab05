@@ -36,7 +36,20 @@ def main(page: ft.Page):
     lista_auto = ft.ListView(expand=True, spacing=5, padding=10, auto_scroll=True)
 
     # Tutti i TextField per le info necessarie per aggiungere una nuova automobile (marca, modello, anno, contatore posti)
-    # TODO
+    txt_nuova_auto = ft.Text(value="Aggiungi nuova auto", size=20)
+    marca = ft.TextField(label = "Marca")
+    modello = ft.TextField(label = "Modello")
+    anno = ft.TextField(label = "Anno")
+    num_posti = ft.TextField(value="0", text_align="right", width=100)
+
+    def minus_click(e):
+        num_posti.value = str(int(num_posti.value) - 1)
+        page.update()
+
+    def plus_click(e):
+        num_posti.value = str(int(num_posti.value) + 1)
+        page.update()
+    page.update()
 
     # --- FUNZIONI APP ---
     def aggiorna_lista_auto():
@@ -57,6 +70,41 @@ def main(page: ft.Page):
         txt_responsabile.value = f"Responsabile: {autonoleggio.responsabile}"
         page.update()
 
+    def Aggiungi_auto(marca, modello, anno_int, num_posti_int):
+        Autonoleggio.aggiungi_automobile(autonoleggio, marca, modello, anno_int, num_posti_int)
+        print("Auto aggiunta con successo!")
+        page.update()
+
+    def aggiungi_automobile_click(e):
+        # Validazione dei campi
+        if not anno.value or not anno.value.isdigit():
+            anno.error_text = "Inserisci un anno valido"
+            page.update()
+            return
+        else:
+            anno.error_text = None
+
+        if not num_posti.value or not num_posti.value.isdigit():
+            num_posti.error_text = "Inserisci un numero valido di posti"
+            page.update()
+            return
+        else:
+            num_posti.error_text = None
+
+        num_posti_int = int(num_posti.value)
+        anno_int = int(anno.value)
+        Aggiungi_auto(marca.value, modello.value, anno_int, num_posti_int)
+        aggiorna_lista_auto()
+
+        marca.value = ""
+        modello.value = ""
+        anno.value = ""
+        num_posti.value = "0"
+
+        anno.error_text = None
+        num_posti.error_text = None
+
+        page.update()
     # Handlers per la gestione dei bottoni utili all'inserimento di una nuova auto
     # TODO
 
@@ -65,7 +113,7 @@ def main(page: ft.Page):
     pulsante_conferma_responsabile = ft.ElevatedButton("Conferma", on_click=conferma_responsabile)
 
     # Bottoni per la gestione dell'inserimento di una nuova auto
-    # TODO
+    pulsante_conferma_auto = ft.ElevatedButton("Aggiungi", on_click=aggiungi_automobile_click)
 
     # --- LAYOUT ---
     page.add(
@@ -81,12 +129,19 @@ def main(page: ft.Page):
         ft.Row(spacing=200,
                controls=[input_responsabile, pulsante_conferma_responsabile],
                alignment=ft.MainAxisAlignment.CENTER),
+        ft.Divider(),
 
         # Sezione 3
-        # TODO
+        txt_nuova_auto,
+        ft.Row(spacing=30,
+               controls=[marca, modello, anno, ft.IconButton(ft.Icons.REMOVE, on_click=minus_click),
+                num_posti,
+                ft.IconButton(ft.Icons.ADD, on_click=plus_click),],
+               alignment=ft.MainAxisAlignment.CENTER),
+        pulsante_conferma_auto,
+        ft.Divider(),
 
         # Sezione 4
-        ft.Divider(),
         ft.Text("Automobili", size=20),
         lista_auto,
     )
